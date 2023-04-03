@@ -1,61 +1,46 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+var express = require("express");
+var ParseServer = require("parse-server").ParseServer;
+var ParseDashboard = require("parse-dashboard");
 
-const ParseServer = require("parse-server").ParseServer;
+var api = new ParseServer({
+    databaseURI: "mongodb://localhost:27017/back", // Connection string for your MongoDB database
+    appId: "backmyAppId",
+    masterKey: "backmyMasterKey",
+    fileKey: "optionalFileKey",
+    serverURL: "http://localhost:1337/parse",
+    // below added for warnings
+    allowClientClassCreation: true,
+    allowExpiredAuthDataToken: true,
+    //future call
+    // cloud: './cloud/main.js', // Path to your Cloud Code
+});
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+
+var options = { allowInsecureHTTP: false };
+
+var dashboard = new ParseDashboard({
+    "apps": [
+        {
+            "serverURL": "http://localhost:1337/parse",
+            "appId": "backmyAppId",
+            "masterKey": "backmyMasterKey",
+            "appName": "back"
+        }
+    ],
+    "users": [
+        {
+            "user": "mbnsfr",
+            "pass": "1qw23er4"
+        }
+    ]
+}, options);
 
 var app = express();
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.use("/dashboard", dashboard);
+app.use("/parse", api.app);
 
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+var httpServer = require("http").createServer(app);
+httpServer.listen(4040);
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  next(createError(404));
-});
-
-// error handler
-app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
-
-const api = new ParseServer({
-  databaseURI: "mongodb://127.0.0.1:27017/uniserver", // Connection string for your MongoDB database
-  // cloud: "",
-  appId: "uniservermyAppId",
-  masterKey: "uniserverMasterKey", // Keep this key secret!
-  fileKey: "optionalFileKey",
-  serverURL: "http://localhost:1351/parse", // Don't forget to change to https if needed
-  // serverURL: "https://localhost:1351/parse", // Don't forget to change to https if needed
-  // javascriptKey: "",
-  // restAPIKey: "",
-});
-
-app.use("/parse", api);
-
-// app.listen(1351, function() {
-//   console.log(`uni-server running on port 1351.`);
-// });
-
-module.exports = app;
+app.listen(1337);
