@@ -1,3 +1,4 @@
+// perfect how to use parse cloud with react : https://www.back4app.com/docs/react-native/parse-sdk/cloud-functions/react-native-cloud-functions
 // from https://medium.com/@corradodebari/add-machine-learning-functions-to-parse-platform-through-oracle-autonomous-db-1110c026e46e
 
 // var CONFIG = require('./dbconfig.json');
