@@ -1,0 +1,6 @@
+{
+    "authUrl": "https://[DB_HOSTNAME]/omlusers/api/oauth2/v1/token",
+    "password": "*********",
+    "username": "[DB_USER]",
+    "mlFunctionUrl": "https://[DB_HOSTNAME]/omlmod/v1/deployment/[ML_MODEL]"
+}
